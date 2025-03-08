@@ -13,6 +13,7 @@ use tokio::signal;
 use tensorzero_internal::clickhouse::ClickHouseConnectionInfo;
 use tensorzero_internal::config_parser::Config;
 use tensorzero_internal::endpoints;
+mod config;
 use tensorzero_internal::endpoints::status::TENSORZERO_VERSION;
 use tensorzero_internal::error;
 use tensorzero_internal::gateway_util;
@@ -53,10 +54,11 @@ async fn main() {
     let config_path = args.config_file.or(args.tensorzero_toml);
 
     let config = if let Some(path) = &config_path {
+        let toml_str = std::fs::read_to_string(path)
+            .expect_pretty("Failed to read config file");
         Arc::new(
-            Config::load_and_verify_from_path(Path::new(&path))
-                .await
-                .expect_pretty("Failed to load config"),
+            config::load_from_toml(&toml_str)
+                .expect_pretty("Failed to parse config")
         )
     } else {
         tracing::warn!("No config file provided, so only default functions will be available. Use `--config-file path/to/tensorzero.toml` to specify a config file.");

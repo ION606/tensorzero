@@ -15,6 +15,8 @@ tracing-subscriber = { version = "0.3.18", features = [
 tokio = { workspace = true }
 mimalloc = "0.1.43"
 clap = "4.5.28"
+serde_path_to_error = "0.1.14"
+toml_edit = { workspace = true }
 
 [lints]
 workspace = true
